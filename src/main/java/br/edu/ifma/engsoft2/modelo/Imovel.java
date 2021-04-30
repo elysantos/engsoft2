@@ -2,6 +2,7 @@ package br.edu.ifma.engsoft2.modelo;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "IMOVEIS")
@@ -44,6 +45,38 @@ public class Imovel {
     @Column(name = "OBS")
     private String obs;
 
+    public Imovel() {
+    }
+
+    public Imovel(String tipoImovel, String endereco, String bairro, String cep, BigDecimal metragem, int dormitorios, int banheiros, int suites, int vagasGaragem, BigDecimal valorAluguelSugerido, String obs) {
+        this.tipoImovel = tipoImovel;
+        this.endereco = endereco;
+        this.bairro = bairro;
+        this.cep = cep;
+        this.metragem = metragem;
+        this.dormitorios = dormitorios;
+        this.banheiros = banheiros;
+        this.suites = suites;
+        this.vagasGaragem = vagasGaragem;
+        this.valorAluguelSugerido = valorAluguelSugerido;
+        this.obs = obs;
+    }
+
+    public Imovel(int id, String tipoImovel, String endereco, String bairro, String cep, BigDecimal metragem, int dormitorios, int banheiros, int suites, int vagasGaragem, BigDecimal valorAluguelSugerido, String obs) {
+        this.id = id;
+        this.tipoImovel = tipoImovel;
+        this.endereco = endereco;
+        this.bairro = bairro;
+        this.cep = cep;
+        this.metragem = metragem;
+        this.dormitorios = dormitorios;
+        this.banheiros = banheiros;
+        this.suites = suites;
+        this.vagasGaragem = vagasGaragem;
+        this.valorAluguelSugerido = valorAluguelSugerido;
+        this.obs = obs;
+    }
+
     @Override
     public String toString() {
         return "Imovel{" +
@@ -62,99 +95,23 @@ public class Imovel {
                 '}';
     }
 
-
-
-    public String getTipoImovel() {
-        return tipoImovel;
-    }
-
     public void setTipoImovel(String tipoImovel) {
         this.tipoImovel = tipoImovel;
     }
 
-    public String getEndereco() {
-        return endereco;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Imovel imovel = (Imovel) o;
+        return id == imovel.id && dormitorios == imovel.dormitorios && banheiros == imovel.banheiros && suites == imovel.suites && vagasGaragem == imovel.vagasGaragem && Objects.equals(tipoImovel, imovel.tipoImovel) && Objects.equals(endereco, imovel.endereco) && Objects.equals(bairro, imovel.bairro) && Objects.equals(cep, imovel.cep) && Objects.equals(metragem, imovel.metragem) && Objects.equals(valorAluguelSugerido, imovel.valorAluguelSugerido) && Objects.equals(obs, imovel.obs);
     }
 
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, tipoImovel, endereco, bairro, cep, metragem, dormitorios, banheiros, suites, vagasGaragem, valorAluguelSugerido, obs);
     }
 
-    public String getBairro() {
-        return bairro;
-    }
-
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
-    }
-
-    public String getCep() {
-        return cep;
-    }
-
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
-
-    public BigDecimal getMetragem() {
-        return metragem;
-    }
-
-    public void setMetragem(BigDecimal metragem) {
-        this.metragem = metragem;
-    }
-
-    public int getDormitorios() {
-        return dormitorios;
-    }
-
-    public void setDormitorios(int dormitorios) {
-        this.dormitorios = dormitorios;
-    }
-
-    public int getBanheiros() {
-        return banheiros;
-    }
-
-    public void setBanheiros(int banheiros) {
-        this.banheiros = banheiros;
-    }
-
-    public int getSuites() {
-        return suites;
-    }
-
-    public void setSuites(int suites) {
-        this.suites = suites;
-    }
-
-    public int getVagasGaragem() {
-        return vagasGaragem;
-    }
-
-    public void setVagasGaragem(int vagasGaragem) {
-        this.vagasGaragem = vagasGaragem;
-    }
-
-    public BigDecimal getValorAluguelSugerido() {
-        return valorAluguelSugerido;
-    }
-
-    public void setValorAluguelSugerido(BigDecimal valorAluguelSugerido) {
-        this.valorAluguelSugerido = valorAluguelSugerido;
-    }
-
-    public String getObs() {
-        return obs;
-    }
-
-    public void setObs(String obs) {
-        this.obs = obs;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getId() {
         return id;

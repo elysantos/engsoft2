@@ -27,7 +27,7 @@ public class AluguelService {
     private final LocacaoRepository locacaoRepository;
     private final ClienteRepository clienteRepository;
 
-    List<Aluguel> alugueisPagosPorCliente(String nomeCliente) throws ClienteNotFoundException {
+    public List<Aluguel> alugueisPagosPorCliente(String nomeCliente) throws ClienteNotFoundException {
         Cliente cliente = clienteRepository.findByNomeLike(nomeCliente);
         if (cliente == null) {
             throw new ClienteNotFoundException();
@@ -48,7 +48,7 @@ public class AluguelService {
         return alugueis;
     }
 
-    List<Aluguel> alugueisPagosEmAtrasoPorCliente(String nomeCliente) throws ClienteNotFoundException {
+    public List<Aluguel> alugueisPagosEmAtrasoPorCliente(String nomeCliente) throws ClienteNotFoundException {
         Cliente cliente = clienteRepository.findByNomeLike(nomeCliente);
         if (cliente == null) {
             throw new ClienteNotFoundException();
@@ -61,8 +61,11 @@ public class AluguelService {
         for (Locacao locacao : locacoes) {
             alugueis.addAll(locacao.getAlugueis().stream()
                     .filter(a ->
-                            a.getDataPagamento().isAfter(a.getDataVencimento())
-                                    && a.getValorPago().compareTo(BigDecimal.ONE) < 1
+                            (a.getDataPagamento() != null &&
+                                    a.getDataPagamento()
+                                    .isAfter(a.getDataVencimento())
+                                    && a.getValorPago()
+                                    .compareTo(BigDecimal.ONE) < 1)
                     ).collect(Collectors.toList()));
         }
 
@@ -70,7 +73,7 @@ public class AluguelService {
     }
 
 
-    void realizarPagamandoAluguel(BigDecimal valorPago, LocalDate dataPagamento, int idLocacao) throws LocacaoNotFoundException, ValorIncorretoException, SemAluguelException {
+    public void realizarPagamentoAluguel(BigDecimal valorPago, LocalDate dataPagamento, int idLocacao) throws LocacaoNotFoundException, ValorIncorretoException, SemAluguelException {
         Optional<Locacao> optional = locacaoRepository.findById(idLocacao);
         if(optional.isEmpty()){
             throw new LocacaoNotFoundException();

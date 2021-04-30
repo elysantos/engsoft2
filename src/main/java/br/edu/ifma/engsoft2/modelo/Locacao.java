@@ -5,6 +5,7 @@ import br.edu.ifma.engsoft2.exceptions.SemAluguelException;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +18,10 @@ public class Locacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @ManyToOne
     private Imovel imovel;
 
-
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @ManyToOne
     private Cliente inquilino;
 
     @Column(name = "VALOR_ALUGUEL")
@@ -45,8 +45,8 @@ public class Locacao {
     @Column(name = "OBS")
     private String obs;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.PERSIST, mappedBy = "locacao")
-    private List<Aluguel> alugueis;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "locacao", cascade = CascadeType.ALL)
+    private List<Aluguel> alugueis = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -64,12 +64,9 @@ public class Locacao {
                 '}';
     }
 
+
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Imovel getImovel() {
@@ -78,10 +75,6 @@ public class Locacao {
 
     public void setImovel(Imovel imovel) {
         this.imovel = imovel;
-    }
-
-    public Cliente getInquilino() {
-        return inquilino;
     }
 
     public void setInquilino(Cliente inquilino) {
@@ -96,56 +89,28 @@ public class Locacao {
         this.valorAluguel = valorAluguel;
     }
 
-    public BigDecimal getPercentualMulta() {
-        return percentualMulta;
-    }
-
-    public void setPercentualMulta(BigDecimal percentualMulta) {
-        this.percentualMulta = percentualMulta;
-    }
-
-    public int getDiaVencimento() {
-        return diaVencimento;
-    }
-
     public void setDiaVencimento(int diaVencimento) {
         this.diaVencimento = diaVencimento;
-    }
-
-    public LocalDate getDataInicio() {
-        return dataInicio;
     }
 
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public LocalDate getDataFim() {
-        return dataFim;
-    }
-
-    public void setDataFim(LocalDate dataFim) {
-        this.dataFim = dataFim;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
 
-    public String getObs() {
-        return obs;
-    }
-
-    public void setObs(String obs) {
-        this.obs = obs;
-    }
-
     public List<Aluguel> getAlugueis() {
         return alugueis;
+    }
+
+    public void setAlugueis(List<Aluguel> alugueis) {
+        this.alugueis = alugueis;
+    }
+
+    public void addAluguel(Aluguel aluguel){
+        this.alugueis.add(aluguel);
     }
 
     public BigDecimal valorPagar(LocalDate data){
@@ -154,7 +119,8 @@ public class Locacao {
 
         Optional<Aluguel> aluguel = this.alugueis.stream()
                 .filter(a ->
-                    !(a.getValorPago().compareTo(BigDecimal.ZERO) < 1
+                    !((a.getValorPago()!= null
+                            && a.getValorPago().compareTo(BigDecimal.ZERO) < 1)
                             || a.getDataPagamento() == null)
                 )
                 .min(Comparator.comparing(e ->
@@ -174,8 +140,8 @@ public class Locacao {
     public Aluguel proximoPagar() throws SemAluguelException {
         Optional<Aluguel> optional = this.alugueis.stream()
                 .filter(a ->
-                        !(a.getValorPago().compareTo(BigDecimal.ZERO) < 1
-                                || a.getDataPagamento() == null)
+                        (a.getValorPago() != null && !(a.getValorPago().compareTo(BigDecimal.ZERO) < 1
+                                || a.getDataPagamento() == null))
                 )
                 .min(Comparator.comparing(e ->
                         e.getDataVencimento().toEpochDay()

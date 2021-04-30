@@ -1,20 +1,22 @@
 package br.edu.ifma.engsoft2.modelo;
 
+import javax.annotation.processing.Generated;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ALUGUEIS")
-@IdClass(AluguelID.class)
 public class Aluguel {
 
     @Id
-    @Column(name = "ID_LOCACAO")
-    private int idLocacao;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Id
-    @Column(name = "DATA_VENCIMENTO")
+    @ManyToOne
+    private Locacao locacao;
+
     private LocalDate dataVencimento;
 
     @Column(name = "DATA_PAGAMENTO")
@@ -30,21 +32,35 @@ public class Aluguel {
     public Aluguel() {
     }
 
-    public Aluguel(int idLocacao, LocalDate dataVencimento, LocalDate dataPagamento, String obs, BigDecimal valorPago) {
-        this.idLocacao = idLocacao;
+    public Aluguel(Locacao locacao, LocalDate dataVencimento) {
+        this.locacao = locacao;
+        this.dataVencimento = dataVencimento;
+    }
+
+    public Aluguel(Locacao locacao, LocalDate dataVencimento, LocalDate dataPagamento, BigDecimal valorPago) {
+        this.locacao = locacao;
         this.dataVencimento = dataVencimento;
         this.dataPagamento = dataPagamento;
-        this.obs = obs;
+        this.valorPago = valorPago;
+    }
+
+    public Aluguel(LocalDate dataVencimento, LocalDate dataPagamento, BigDecimal valorPago) {
+        this.dataVencimento = dataVencimento;
+        this.dataPagamento = dataPagamento;
         this.valorPago = valorPago;
     }
 
     @Override
-    public String toString() {
-        return "Aluguel{" +
-                "dataVencimento=" + dataVencimento +
-                ", dataPagamento=" + dataPagamento +
-                ", obs='" + obs + '\'' +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Aluguel aluguel = (Aluguel) o;
+        return id == aluguel.id && Objects.equals(locacao, aluguel.locacao) && Objects.equals(dataVencimento, aluguel.dataVencimento) && Objects.equals(dataPagamento, aluguel.dataPagamento) && Objects.equals(valorPago, aluguel.valorPago);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, dataVencimento, dataPagamento, valorPago);
     }
 
     public BigDecimal getValorPago() {
@@ -55,12 +71,13 @@ public class Aluguel {
         this.valorPago = valorPago;
     }
 
-    public int getIdLocacao() {
-        return idLocacao;
+
+    public Locacao getLocacao() {
+        return locacao;
     }
 
-    public void setIdLocacao(int idLocacao) {
-        this.idLocacao = idLocacao;
+    public void setLocacao(Locacao locacao) {
+        this.locacao = locacao;
     }
 
     public LocalDate getDataVencimento() {
@@ -79,12 +96,5 @@ public class Aluguel {
         this.dataPagamento = dataPagamento;
     }
 
-    public String getObs() {
-        return obs;
-    }
-
-    public void setObs(String obs) {
-        this.obs = obs;
-    }
 
 }
