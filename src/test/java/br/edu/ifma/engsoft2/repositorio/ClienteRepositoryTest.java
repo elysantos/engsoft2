@@ -45,4 +45,27 @@ class ClienteRepositoryTest {
         List<Cliente> clientes = clienteRepository.findAll();
         assertTrue(clientes.size() == 3);
     }
+
+    @Test
+    void deveTestarAlteracao() {
+        Cliente clienteAlterar = clienteRepository.findByNomeLike("Eva");
+        clienteAlterar.setCpf("11100011100");
+        Cliente clienteAlterado = clienteRepository.save(clienteAlterar);
+        assertTrue(clienteAlterado.equals(clienteAlterar));
+    }
+
+    @Test
+    void deveRemoverUmItem() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        clienteRepository.delete(clientes.get(0));
+        List<Cliente> novaLista = clienteRepository.findAll();
+        assertTrue(clientes.size() == (novaLista.size() + 1));
+    }
+
+    @Test
+    void deveRemoverTodos() {
+        clienteRepository.deleteAll();
+        List<Cliente> clientes = clienteRepository.findAll();
+        assertTrue(clientes.isEmpty());
+    }
 }
