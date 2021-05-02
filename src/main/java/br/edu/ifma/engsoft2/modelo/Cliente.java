@@ -36,6 +36,11 @@ public class Cliente {
     public Cliente() {
     }
 
+    public Cliente(String nome, String email) {
+        this.nome  = nome;
+        this.email = email;
+    }
+
     public Cliente(String nome, String cpf, String telefone1, String telefone2, String email, LocalDate dataNascimento) {
         this.nome = nome;
         this.cpf = cpf;
@@ -76,5 +81,9 @@ public class Cliente {
                 ", email='" + email + '\'' +
                 ", dataNascimento=" + dataNascimento +
                 '}';
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

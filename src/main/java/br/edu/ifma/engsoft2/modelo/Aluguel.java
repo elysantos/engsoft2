@@ -71,6 +71,9 @@ public class Aluguel {
         this.valorPago = valorPago;
     }
 
+    public Aluguel(int id) {
+        this.id = id;
+    }
 
     public Locacao getLocacao() {
         return locacao;

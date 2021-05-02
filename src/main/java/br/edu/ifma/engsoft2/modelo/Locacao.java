@@ -77,6 +77,10 @@ public class Locacao {
         this.imovel = imovel;
     }
 
+    public Cliente getInquilino() {
+        return inquilino;
+    }
+
     public void setInquilino(Cliente inquilino) {
         this.inquilino = inquilino;
     }
@@ -150,5 +154,12 @@ public class Locacao {
             return optional.get();
         }
         throw new SemAluguelException();
+    }
+
+    public boolean existeVencido(){
+        Optional<Aluguel> anyAluguel = this.alugueis.stream().filter(a -> (a.getDataPagamento() == null
+                && a.getDataVencimento().isBefore(LocalDate.now())))
+                .findAny();
+        return anyAluguel.isPresent();
     }
 }
