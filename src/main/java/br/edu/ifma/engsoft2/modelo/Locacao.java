@@ -28,7 +28,7 @@ public class Locacao {
     private BigDecimal valorAluguel;
 
     @Column(name = "PERCENTUAL_MULTA")
-    private BigDecimal percentualMulta = BigDecimal.valueOf(0.33);
+    private BigDecimal percentualMulta = BigDecimal.valueOf(0.0033);
 
     @Column(name = "DIA_VENCIMENTO")
     private int diaVencimento;
@@ -123,15 +123,14 @@ public class Locacao {
 
         Optional<Aluguel> aluguel = this.alugueis.stream()
                 .filter(a ->
-                    !((a.getValorPago()!= null
-                            && a.getValorPago().compareTo(BigDecimal.ZERO) < 1)
-                            || a.getDataPagamento() == null)
+                    (a.getValorPago() == null
+                            && a.getDataPagamento() == null)
                 )
                 .min(Comparator.comparing(e ->
                      e.getDataVencimento().toEpochDay()
                 ));
         if(aluguel.isPresent()){
-            int dias = data.until(aluguel.get().getDataVencimento()).getDays();
+            int dias = aluguel.get().getDataVencimento().until(data).getDays();
             BigDecimal valorTotalMulta = diaMulta.multiply(BigDecimal.valueOf(dias));
             if(valorTotalMulta.compareTo(maximoMulta) > 0){
                 return this.valorAluguel.add(maximoMulta);
@@ -144,8 +143,7 @@ public class Locacao {
     public Aluguel proximoPagar() throws SemAluguelException {
         Optional<Aluguel> optional = this.alugueis.stream()
                 .filter(a ->
-                        (a.getValorPago() != null && !(a.getValorPago().compareTo(BigDecimal.ZERO) < 1
-                                || a.getDataPagamento() == null))
+                        (a.getValorPago() == null && a.getDataPagamento() == null)
                 )
                 .min(Comparator.comparing(e ->
                         e.getDataVencimento().toEpochDay()

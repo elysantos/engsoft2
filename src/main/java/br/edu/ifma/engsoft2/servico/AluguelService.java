@@ -1,9 +1,6 @@
 package br.edu.ifma.engsoft2.servico;
 
-import br.edu.ifma.engsoft2.exceptions.ClienteNotFoundException;
-import br.edu.ifma.engsoft2.exceptions.LocacaoNotFoundException;
-import br.edu.ifma.engsoft2.exceptions.SemAluguelException;
-import br.edu.ifma.engsoft2.exceptions.ValorIncorretoException;
+import br.edu.ifma.engsoft2.exceptions.*;
 import br.edu.ifma.engsoft2.modelo.Aluguel;
 import br.edu.ifma.engsoft2.modelo.Cliente;
 import br.edu.ifma.engsoft2.modelo.Locacao;
@@ -11,6 +8,7 @@ import br.edu.ifma.engsoft2.repositorio.AluguelRepository;
 import br.edu.ifma.engsoft2.repositorio.ClienteRepository;
 import br.edu.ifma.engsoft2.repositorio.LocacaoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AluguelService {
@@ -73,15 +72,19 @@ public class AluguelService {
     }
 
 
-    public void realizarPagamentoAluguel(BigDecimal valorPago, LocalDate dataPagamento, int idLocacao) throws LocacaoNotFoundException, ValorIncorretoException, SemAluguelException {
+    public void realizarPagamentoAluguel(BigDecimal valorPago, LocalDate dataPagamento, int idLocacao) throws LocacaoNotFoundException, ValorIncorretoException, SemAluguelException, ValorBaixoException {
         Optional<Locacao> optional = locacaoRepository.findById(idLocacao);
         if(optional.isEmpty()){
             throw new LocacaoNotFoundException();
         }
         Locacao locacao = optional.get();
         BigDecimal valorPagar = locacao.valorPagar(dataPagamento);
-        if(valorPago.compareTo(valorPagar) != 0){
+        log.info("Valor pagar: {}", valorPagar);
+        log.info("Valor pago: {}", valorPago);
+        if(valorPago.compareTo(valorPagar) > 0){
             throw new ValorIncorretoException();
+        }else if(valorPago.compareTo(valorPagar) < 0){
+            throw new ValorBaixoException();
         }
 
         Aluguel aluguel = locacao.proximoPagar();
